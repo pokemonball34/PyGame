@@ -1,16 +1,21 @@
 import pygame
 from pygame.locals import *
 
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+
 
 class App:
     def __init__(self):
         self._running = True
-        self._display_surf = None
+        self._game_display = None
+        self._game_title = None
         self.size = self.weight, self.height = 640, 400
 
     def on_init(self):
         pygame.init()
-        self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
+        self._game_display = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
+        self._game_title = pygame.display.set_caption('A Game')
         self._running = True
 
     def on_event(self, event):
@@ -21,7 +26,7 @@ class App:
         pass
 
     def on_render(self):
-        pass
+        pygame.display.update()
 
     def on_cleanup(self):
         pygame.quit()
@@ -32,6 +37,7 @@ class App:
 
         while (self._running):
             for event in pygame.event.get():
+                
                 self.on_event(event)
             self.on_loop()
             self.on_render()
