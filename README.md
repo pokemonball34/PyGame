@@ -1,4 +1,11 @@
 # PyGame
+May 16, 2018, 2:21 pm:
+  - Uploaded Dodgy Bird
+  - Uploaded Cookie Clicker
+    - Created a cookie
+    - Created a button input
+    - ...That's it...
+  - Uploaded cookie image
 
 April 27, 2018, 2:24 pm:
   - Revised the new quiz submission
