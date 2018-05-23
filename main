@@ -1,0 +1,55 @@
+import pygame
+import time
+
+pygame.init()
+
+DISPLAY_WIDTH = 800
+DISPLAY_HEIGHT = 600
+
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+
+game_display = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
+pygame.display.set_caption('A NEET Cafe')
+clock = pygame.time.Clock()
+
+game_running = True
+scene = 'main_menu'
+def text_objects(text, font):
+    text_surface = font.render(text, True, BLACK)
+    return text_surface, text_surface.get_rect()
+
+
+def message_display(text):
+    large_text = pygame.font.Font('freesansbold.ttf', 115)
+    text_surf, text_rect = text_objects(text, large_text)
+    text_rect.center = ((DISPLAY_WIDTH / 2), (DISPLAY_HEIGHT / 2))
+    game_display.blit(text_surf, text_rect)
+    pygame.display.update()
+    time.sleep(2)
+    game_loop()
+    
+
+def game_loop():
+    while game_running:
+        # Event Logic Loop
+        for event in pygame.event.get():
+            if event == pygame.QUIT():
+                pygame.quit()
+                quit()
+        
+        # Scene Logic Loop
+        if scene == 'main_menu':
+            pass
+        elif scene == 'scene01':
+            pass
+        elif scene == 'scene02':
+            pass
+        
+        pygame.display.update()
+        clock.tick(50)
+
+
+game_loop()
+pygame.quit()
+quit()
