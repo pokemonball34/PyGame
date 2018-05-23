@@ -1,4 +1,10 @@
 # PyGame
+
+May 24, 2018, 2:24 pm:
+  - Created main file
+  - Uploaded various images
+  - Started on CPT project
+  
 May 16, 2018, 2:21 pm:
   - Uploaded Dodgy Bird
   - Uploaded Cookie Clicker
