@@ -15,6 +15,8 @@ clock = pygame.time.Clock()
 
 game_running = True
 scene = 'main_menu'
+
+
 def text_objects(text, font):
     text_surface = font.render(text, True, BLACK)
     return text_surface, text_surface.get_rect()
@@ -28,7 +30,7 @@ def message_display(text):
     pygame.display.update()
     time.sleep(2)
     game_loop()
-    
+
 
 def game_loop():
     while game_running:
@@ -37,7 +39,7 @@ def game_loop():
             if event == pygame.QUIT():
                 pygame.quit()
                 quit()
-        
+
         # Scene Logic Loop
         if scene == 'main_menu':
             pass
@@ -45,7 +47,7 @@ def game_loop():
             pass
         elif scene == 'scene02':
             pass
-        
+
         pygame.display.update()
         clock.tick(50)
 
