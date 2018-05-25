@@ -3,9 +3,14 @@ import time
 
 pygame.init()
 
+title_font = pygame.font.SysFont('Arial', 48)
 DISPLAY_WIDTH = 800
 DISPLAY_HEIGHT = 600
 
+# GRAPHICS
+customer1 = pygame.image.load('main_character.png')
+
+# COLOR PALATE
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
@@ -27,24 +32,52 @@ def message_display(text):
     text_surf, text_rect = text_objects(text, large_text)
     text_rect.center = ((DISPLAY_WIDTH / 2), (DISPLAY_HEIGHT / 2))
     game_display.blit(text_surf, text_rect)
-    pygame.display.update()
     time.sleep(2)
+    pygame.display.update()
     game_loop()
 
 
+def customer():
+    game_display.blit(customer1, (400, 300))
+
+
 def game_loop():
+    global scene
     while game_running:
+        key_refresh = False
         # Event Logic Loop
         for event in pygame.event.get():
-            if event == pygame.QUIT():
+            if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+            if scene == 'main_menu':
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not key_refresh:
+                    # Create a Start button
+                    scene = 'scene01'
+                    key_refresh = True
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and scene == 'scene01' and not key_refresh:
+                scene = 'main_menu'
+                key_refresh = True
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                key_refresh = False
 
         # Scene Logic Loop
         if scene == 'main_menu':
-            pass
+            game_display.fill(WHITE)
+            game_title = title_font.render('A NEET Cafe', 1, BLACK)
+            game_display.blit(game_title, (255, 200))
+
+            # Start Button
+            pygame.draw.rect(game_display, BLACK, pygame.Rect(300, 300, 200, 80))
+            start_button = title_font.render('START', 1, WHITE)
+            game_display.blit(start_button, (320, 300))
+
         elif scene == 'scene01':
-            pass
+            game_display.fill(BLACK)
+            pygame.draw.rect(game_display, WHITE, pygame.Rect(0, 200, DISPLAY_WIDTH, 100))
+            customer()
+            pygame.draw.rect(game_display, WHITE, pygame.Rect(0, 500, DISPLAY_WIDTH, 100))
+
         elif scene == 'scene02':
             pass
 
