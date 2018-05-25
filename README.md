@@ -1,5 +1,10 @@
 # PyGame
 
+May 25, 2018, 2:28 pm:
+  - Added Title Screen
+  - Added Gameplay Screen
+    - Split up screen for GUI interface
+    
 May 24, 2018, 2:24 pm:
   - Created main file
   - Uploaded various images
