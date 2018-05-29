@@ -1,5 +1,10 @@
 # PyGame
 
+May 29, 2018, 2:31 pm:
+  - Impletmented Timer
+  - Added player_character()
+  - Minor changes to colour palatte
+  
 May 25, 2018, 2:28 pm:
   - Added Title Screen
   - Added Gameplay Screen
