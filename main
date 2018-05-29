@@ -4,7 +4,7 @@ import time
 pygame.init()
 
 title_font = pygame.font.SysFont('Arial', 48)
-my_font = pygame.font.SysFont('Comic Sans', 24)
+my_font = pygame.font.SysFont('Consolas', 24)
 DISPLAY_WIDTH = 800
 DISPLAY_HEIGHT = 600
 
@@ -21,7 +21,7 @@ pygame.display.set_caption('A NEET Cafe')
 clock = pygame.time.Clock()
 
 game_running = True
-scene = 'in_game'
+scene = 'scene03'
 
 
 def text_objects(text, font):
@@ -43,15 +43,12 @@ def customer():
     game_display.blit(customer1, (400, 300))
 
 
-def timer(countdown):
-    pass
-
-
 def game_loop():
     global scene
+    key_refresh = False
+    countdown = 60
+    pygame.time.set_timer(pygame.USEREVENT, 1000)
     while game_running:
-        key_refresh = False
-        countdown = 60
         # Event Logic Loop
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -75,6 +72,11 @@ def game_loop():
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 key_refresh = False
 
+            if event.type == pygame.USEREVENT and scene == 'scene03':
+                countdown -= 1
+                if countdown == 0:
+                    scene = 'game_over'
+
         # Scene Logic Loop
         if scene == 'main_menu':
             game_display.fill(WHITE)
@@ -92,13 +94,6 @@ def game_loop():
             customer()
             pygame.draw.rect(game_display, WHITE, pygame.Rect(0, 500, DISPLAY_WIDTH, 100))
             pygame.draw.rect(game_display, WHITE, pygame.Rect(700, 0, 100, 50))
-            # timer(countdown)
-            font = pygame.font.SysFont(None, 25)
-            text = font.render("Time: " + str(countdown), True, BLUE)
-            game_display.blit(text, (710, 10))
-            countdown -= 1
-            if countdown == 0:
-                scene == 'game_over'
 
         elif scene == 'game_over':
             game_display.fill(BLACK)
@@ -106,6 +101,11 @@ def game_loop():
             game_over_title2 = title_font.render('GAME OVER', 1, WHITE)
             game_display.blit(game_over_title, (255, 200))
             game_display.blit(game_over_title2, (255, 400))
+
+        elif scene == 'scene03':
+            game_display.fill(WHITE)
+            timer = my_font.render('Timer: ' + str(countdown), True, BLACK)
+            game_display.blit(timer, ((DISPLAY_WIDTH / 2) - 50, DISPLAY_HEIGHT / 2))
 
         pygame.display.update()
         clock.tick(50)
