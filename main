@@ -9,7 +9,10 @@ DISPLAY_WIDTH = 800
 DISPLAY_HEIGHT = 600
 
 # GRAPHICS
-customer1 = pygame.image.load('main_character.png')
+main_character = pygame.image.load('main character.png')
+customer1 = pygame.image.load('patrons-3.png')
+customer1 = pygame.transform.scale(customer1, (200, 200))
+pudding = pygame.image.load('food copy 3.png')
 
 # COLOR PALATE
 BLACK = (0, 0, 0)
@@ -39,12 +42,23 @@ def message_display(text):
     game_loop()
 
 
-def player_character():
-    game_display.blit(customer1, (400, 300))
+def get_mouse_coordinates():
+    for event in pygame.event.get():
+        if pygame.MOUSEBUTTONDOWN and event.button == 1:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            print(mouse_x, mouse_y)
+
+
+class PlayerCharacter:
+    def __init__(self):
+        self.img = main_character
+
+    def load_sprite(self):
+        game_display.blit(self.img, (400, 300))
 
 
 def customer():
-    game_display.blit(customer1, (100, 200))
+    game_display.blit(customer1, (50, 0))
 
 
 def game_loop():
@@ -60,10 +74,13 @@ def game_loop():
                 quit()
             if scene == 'main_menu':
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not key_refresh:
-                    # Create a Start button
-                    # The Enters the Game
-                    scene = 'in_game'
-                    key_refresh = True
+                    # Checks mouse x and y coodinates
+                    mouse_x, mouse_y = pygame.mouse.get_pos()
+                    # Condition, if the cursor is within the button when clicked
+                    if 300 < mouse_x < 500 and 300 < mouse_y < 380:
+                        # Enters the Game
+                        scene = 'in_game'
+                        key_refresh = True
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and scene == 'game_over' and not key_refresh:
                 scene = 'main_menu'
@@ -77,6 +94,14 @@ def game_loop():
                 if countdown == 0:
                     scene = 'game_over'
 
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and scene == 'in_game' and not key_refresh:
+                scene = 'pause_menu'
+                key_refresh = True
+
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and scene == 'pause_menu' and not key_refresh:
+                scene = 'in_game'
+                key_refresh = True
+
         # Scene Logic Loop
         if scene == 'main_menu':
             game_display.fill(WHITE)
@@ -88,15 +113,22 @@ def game_loop():
             start_button = title_font.render('START', 1, WHITE)
             game_display.blit(start_button, (320, 300))
 
+
         elif scene == 'in_game':
             game_display.fill(WHITE)
             pygame.draw.rect(game_display, BLUE, pygame.Rect(0, 200, DISPLAY_WIDTH, 100))
-            player_character()
+            player = PlayerCharacter()
+            player.load_sprite()
             customer()
             pygame.draw.rect(game_display, BLUE, pygame.Rect(0, 500, DISPLAY_WIDTH, 100))
             pygame.draw.rect(game_display, BLUE, pygame.Rect(700, 0, 100, 50))
             timer = my_font.render('Timer: ' + str(countdown), True, BLACK)
-            game_display.blit(timer, ((DISPLAY_WIDTH / 2) - 50, DISPLAY_HEIGHT / 2))
+            game_display.blit(pudding, (0, 500))
+            game_display.blit(timer, (DISPLAY_WIDTH - 85, 15))
+
+        elif scene == 'pause_menu':
+            pause = title_font.render('PAUSED', 1, BLACK)
+            game_display.blit(pause, (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2))
 
         elif scene == 'game_over':
             game_display.fill(BLACK)
