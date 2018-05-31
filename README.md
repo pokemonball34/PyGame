@@ -1,5 +1,10 @@
 # PyGame
 
+May 31, 2018, 2:31 pm:
+  - Created player_character class
+  - Created 'button' for scene: main_menu
+  - Added images as placeholder for the game
+  
 May 29, 2018, 2:31 pm:
   - Impletmented Timer
   - Added player_character()
