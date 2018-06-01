@@ -1,5 +1,10 @@
 # PyGame
 
+June 1, 2018, 1:14 pm:
+  - Created Customer class
+  - Renamed various variables, classes and functions
+  - Resized various blocks
+
 May 31, 2018, 2:31 pm:
   - Created player_character class
   - Created 'button' for scene: main_menu
