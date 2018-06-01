@@ -19,12 +19,40 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
 
+# Seats
+seated_customer = [None, None, None, None]
+
 game_display = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
 pygame.display.set_caption('A NEET Cafe')
 clock = pygame.time.Clock()
 
 game_running = True
-scene = 'main_menu'
+scene = 'in_game'
+
+
+class PlayerCharacter:
+    def __init__(self):
+        self.img = main_character
+        self.position = None
+
+    def load_sprite(self):
+        game_display.blit(self.img, (400, 300))
+
+
+class ServingTable:
+    def __init__(self):
+        self.serving_list = []
+
+    def add_item(self, food):
+        self.serving_list.append(food)
+
+
+class Customer:
+    def __init__(self, image):
+        self.img = image
+
+    def load_sprite(self):
+        game_display.blit(self.img, (50, 0))
 
 
 def text_objects(text, font):
@@ -47,18 +75,6 @@ def get_mouse_coordinates():
         if pygame.MOUSEBUTTONDOWN and event.button == 1:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             print(mouse_x, mouse_y)
-
-
-class PlayerCharacter:
-    def __init__(self):
-        self.img = main_character
-
-    def load_sprite(self):
-        game_display.blit(self.img, (400, 300))
-
-
-def customer():
-    game_display.blit(customer1, (50, 0))
 
 
 def game_loop():
@@ -113,18 +129,18 @@ def game_loop():
             start_button = title_font.render('START', 1, WHITE)
             game_display.blit(start_button, (320, 300))
 
-
         elif scene == 'in_game':
             game_display.fill(WHITE)
-            pygame.draw.rect(game_display, BLUE, pygame.Rect(0, 200, DISPLAY_WIDTH, 100))
+            pygame.draw.rect(game_display, BLUE, pygame.Rect(0, DISPLAY_HEIGHT * 0.25, DISPLAY_WIDTH, DISPLAY_HEIGHT / 8))
             player = PlayerCharacter()
             player.load_sprite()
-            customer()
-            pygame.draw.rect(game_display, BLUE, pygame.Rect(0, 500, DISPLAY_WIDTH, 100))
-            pygame.draw.rect(game_display, BLUE, pygame.Rect(700, 0, 100, 50))
+            seated_customer[0] = Customer(customer1)
+            seated_customer[0].load_sprite()
+            pygame.draw.rect(game_display, BLUE, pygame.Rect(0, 500, DISPLAY_WIDTH, DISPLAY_HEIGHT / 6))
+            pygame.draw.rect(game_display, BLUE, pygame.Rect(DISPLAY_WIDTH * 0.8, 0, DISPLAY_WIDTH * 0.2, DISPLAY_HEIGHT / 12))
             timer = my_font.render('Timer: ' + str(countdown), True, BLACK)
             game_display.blit(pudding, (0, 500))
-            game_display.blit(timer, (DISPLAY_WIDTH - 85, 15))
+            game_display.blit(timer, (DISPLAY_WIDTH * 0.8 + 10, 15))
 
         elif scene == 'pause_menu':
             pause = title_font.render('PAUSED', 1, BLACK)
