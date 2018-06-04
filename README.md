@@ -1,5 +1,9 @@
 # PyGame
 
+June 4, 2018, 2:28 pm:
+  - Cleaned up some code
+  - Continued to work on Customer class
+  
 June 1, 2018, 1:14 pm:
   - Created Customer class
   - Renamed various variables, classes and functions
