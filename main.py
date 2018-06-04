@@ -19,8 +19,8 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
 
-# Seats
-seated_customer = [None, None, None, None]
+# Seats; 0 means empty, 1 means taken
+seated_customer = [0, 0, 0, 0]
 
 game_display = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
 pygame.display.set_caption('A NEET Cafe')
@@ -46,28 +46,30 @@ class ServingTable:
     def add_item(self, food):
         self.serving_list.append(food)
 
+    def remove_item(self, food_name):
+        self.serving_list.remove(food_name)
+
 
 class Customer:
     def __init__(self, image):
         self.img = image
+        self.in_restaurant = True
+        self.seat_position = -1
+
+    def decide_seat(self):
+        for seat in range(0, 4):
+            if seated_customer[seat] == 0 and self.seat_position != -1:
+                seated_customer[seat] = 1
+                self.seat_position = seat
+
+    def leave_seat(self):
+        seated_customer[self.seat_position] = 0
 
     def load_sprite(self):
-        game_display.blit(self.img, (50, 0))
+        game_display.blit(self.img, (0, 50))
 
-
-def text_objects(text, font):
-    text_surface = font.render(text, True, BLACK)
-    return text_surface, text_surface.get_rect()
-
-
-def message_display(text):
-    large_text = pygame.font.Font('freesansbold.ttf', 115)
-    text_surf, text_rect = text_objects(text, large_text)
-    text_rect.center = ((DISPLAY_WIDTH / 2), (DISPLAY_HEIGHT / 2))
-    game_display.blit(text_surf, text_rect)
-    time.sleep(2)
-    pygame.display.update()
-    game_loop()
+    def leave_restaurant(self):
+        self.in_restaurant = False
 
 
 def get_mouse_coordinates():
@@ -88,35 +90,40 @@ def game_loop():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-            if scene == 'main_menu':
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not key_refresh:
-                    # Checks mouse x and y coodinates
-                    mouse_x, mouse_y = pygame.mouse.get_pos()
-                    # Condition, if the cursor is within the button when clicked
-                    if 300 < mouse_x < 500 and 300 < mouse_y < 380:
-                        # Enters the Game
-                        scene = 'in_game'
-                        key_refresh = True
-
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and scene == 'game_over' and not key_refresh:
-                scene = 'main_menu'
-                key_refresh = True
 
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 key_refresh = False
 
-            if event.type == pygame.USEREVENT and scene == 'in_game':
-                countdown -= 1
-                if countdown == 0:
-                    scene = 'game_over'
+            if scene == 'main_menu':
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not key_refresh:
+                    mouse_x, mouse_y = pygame.mouse.get_pos()                                                           # Checks mouse x and y coodinates
+                    if 300 < mouse_x < 500 and 300 < mouse_y < 380:                                                     # Condition, if the cursor is within the button when clicked
+                        scene = 'in_game'                                                                               # Enters the Game
+                        key_refresh = True
 
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and scene == 'in_game' and not key_refresh:
-                scene = 'pause_menu'
-                key_refresh = True
+            if scene == 'game_over':
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not key_refresh:
+                    scene = 'main_menu'
+                    key_refresh = True
 
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and scene == 'pause_menu' and not key_refresh:
-                scene = 'in_game'
-                key_refresh = True
+                if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                    key_refresh = False
+
+            if scene == 'in_game':
+                if event.type == pygame.USEREVENT:
+                    countdown -= 1
+                    if countdown == 0:
+                        scene = 'game_over'
+                        countdown = 60
+
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not key_refresh:
+                    scene = 'pause_menu'
+                    key_refresh = True
+
+            if scene == 'pause_menu':
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not key_refresh:
+                    scene = 'in_game'
+                    key_refresh = True
 
         # Scene Logic Loop
         if scene == 'main_menu':
@@ -131,11 +138,12 @@ def game_loop():
 
         elif scene == 'in_game':
             game_display.fill(WHITE)
-            pygame.draw.rect(game_display, BLUE, pygame.Rect(0, DISPLAY_HEIGHT * 0.25, DISPLAY_WIDTH, DISPLAY_HEIGHT / 8))
+            pygame.draw.rect(game_display, BLUE, pygame.Rect(0, DISPLAY_HEIGHT * 0.4, DISPLAY_WIDTH, DISPLAY_HEIGHT / 8))
             player = PlayerCharacter()
             player.load_sprite()
-            seated_customer[0] = Customer(customer1)
-            seated_customer[0].load_sprite()
+            customer01 = Customer(customer1)
+            customer01.decide_seat()
+            customer01.load_sprite()
             pygame.draw.rect(game_display, BLUE, pygame.Rect(0, 500, DISPLAY_WIDTH, DISPLAY_HEIGHT / 6))
             pygame.draw.rect(game_display, BLUE, pygame.Rect(DISPLAY_WIDTH * 0.8, 0, DISPLAY_WIDTH * 0.2, DISPLAY_HEIGHT / 12))
             timer = my_font.render('Timer: ' + str(countdown), True, BLACK)
