@@ -3,6 +3,7 @@ import time
 
 pygame.init()
 
+# set font for title and regular text
 title_font = pygame.font.SysFont('Arial', 48)
 my_font = pygame.font.SysFont('Consolas', 24)
 DISPLAY_WIDTH = 800
