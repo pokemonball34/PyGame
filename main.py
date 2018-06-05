@@ -12,6 +12,7 @@ DISPLAY_HEIGHT = 600
 
 # GRAPHICS
 main_character = pygame.image.load('main character.png')
+# load and scale customer to fit the diplay rather than using it purely at its original size
 customer1 = pygame.image.load('patrons-3.png')
 customer1 = pygame.transform.scale(customer1, (200, 200))
 pudding = pygame.image.load('food copy 3.png')
