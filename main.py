@@ -37,9 +37,11 @@ class PlayerCharacter:
     def __init__(self):
         self.img = main_character
         self.position = None
+        self.x = 400
+        self.y = 300
 
     def load_sprite(self):
-        game_display.blit(self.img, (400, 300))
+        game_display.blit(self.img, (self.x, self.y))
 
 
 class ServingTable:
@@ -85,8 +87,12 @@ def get_mouse_coordinates():
 def game_loop():
     global scene
     key_refresh = False
+    mouse_refresh = False
+    current_pressed_key = None
     countdown = 60
     pygame.time.set_timer(pygame.USEREVENT, 1000)
+    player = PlayerCharacter()
+    customer01 = Customer(customer1)
     while game_running:
         # Event Logic Loop
         for event in pygame.event.get():
@@ -94,23 +100,17 @@ def game_loop():
                 pygame.quit()
                 quit()
 
-            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                key_refresh = False
-
             if scene == 'main_menu':
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not key_refresh:
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not mouse_refresh:
                     mouse_x, mouse_y = pygame.mouse.get_pos()                                                           # Checks mouse x and y coodinates
                     if 300 < mouse_x < 500 and 300 < mouse_y < 380:                                                     # Condition, if the cursor is within the button when clicked
                         scene = 'in_game'                                                                               # Enters the Game
-                        key_refresh = True
+                        mouse_refresh = True
 
             if scene == 'game_over':
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not key_refresh:
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not mouse_refresh:
                     scene = 'main_menu'
-                    key_refresh = True
-
-                if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                    key_refresh = False
+                    mouse_refresh = True
 
             if scene == 'in_game':
                 if event.type == pygame.USEREVENT:
@@ -118,13 +118,19 @@ def game_loop():
                     if countdown == 0:
                         scene = 'game_over'
                         countdown = 60
+                keys = pygame.key.get_pressed()
 
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not key_refresh:
-                    scene = 'pause_menu'
-                    key_refresh = True
+                if keys[pygame.K_LEFT] and pygame.KEYDOWN:
+                    player.x -= 30
+
+                elif keys[pygame.K_RIGHT] and pygame.KEYDOWN:
+                    player.x += 30
 
             if scene == 'pause_menu':
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not key_refresh:
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not mouse_refresh:
+                    scene = 'in_game'
+                    mouse_refresh = True
+                elif event.type == pygame.K_p and not key_refresh:
                     scene = 'in_game'
                     key_refresh = True
 
@@ -142,9 +148,7 @@ def game_loop():
         elif scene == 'in_game':
             game_display.fill(WHITE)
             pygame.draw.rect(game_display, BLUE, pygame.Rect(0, DISPLAY_HEIGHT * 0.4, DISPLAY_WIDTH, DISPLAY_HEIGHT / 8))
-            player = PlayerCharacter()
             player.load_sprite()
-            customer01 = Customer(customer1)
             customer01.decide_seat()
             customer01.load_sprite()
             pygame.draw.rect(game_display, BLUE, pygame.Rect(0, 500, DISPLAY_WIDTH, DISPLAY_HEIGHT / 6))
@@ -165,7 +169,7 @@ def game_loop():
             game_display.blit(game_over_title2, (255, 400))
 
         pygame.display.update()
-        clock.tick(50)
+        clock.tick(60)
 
 
 game_loop()
