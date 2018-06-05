@@ -6,6 +6,7 @@ pygame.init()
 # set font for title and regular text
 title_font = pygame.font.SysFont('Arial', 48)
 my_font = pygame.font.SysFont('Consolas', 24)
+# set display size (800*600)
 DISPLAY_WIDTH = 800
 DISPLAY_HEIGHT = 600
 
