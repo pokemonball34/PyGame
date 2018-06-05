@@ -1,5 +1,8 @@
 # PyGame
 
+June 5, 2018, 1:14 pm:
+  - Added movement controls to player
+  
 June 4, 2018, 2:28 pm:
   - Cleaned up some code
   - Continued to work on Customer class
