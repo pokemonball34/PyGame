@@ -1,5 +1,9 @@
 # PyGame
 
+June 11, 2018, 1:41 pm:
+  - Cleaned movement controls
+  - Gave some objects the sprite attribute
+  
 June 5, 2018, 1:14 pm:
   - Added movement controls to player
   
