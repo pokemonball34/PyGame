@@ -1,4 +1,3 @@
-# import appication and time
 import pygame
 import time
 
@@ -13,16 +12,19 @@ DISPLAY_HEIGHT = 600
 
 # GRAPHICS
 main_character = pygame.image.load('main character.png')
+title_screen = pygame.image.load('title screen.png')
+game_over_screen = pygame.image.load('cg-you failed.png')
 # load and scale customer to fit the diplay rather than using it purely at its original size
 customer1 = pygame.image.load('patrons-3.png')
 customer1 = pygame.transform.scale(customer1, (200, 200))
-# load food
 pudding = pygame.image.load('food copy 3.png')
 
 # COLOR PALATE
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
+
+# ♫ Music and Sound Fx ♫
 
 # Seats; 0 means empty, 1 means taken
 seated_customer = [0, 0, 0, 0]
@@ -32,18 +34,19 @@ pygame.display.set_caption('A NEET Cafe')
 clock = pygame.time.Clock()
 
 game_running = True
-scene = 'in_game'
+scene = 'main_menu'
 
 
-class PlayerCharacter:
+class PlayerCharacter(pygame.sprite.Sprite):
     def __init__(self):
-        self.img = main_character
+        pygame.sprite.Sprite.__init__(self)
+        self.image = main_character
         self.position = None
         self.x = 400
         self.y = 300
 
     def load_sprite(self):
-        game_display.blit(self.img, (self.x, self.y))
+        game_display.blit(self.image, (self.x, self.y))
 
 
 class ServingTable:
@@ -57,8 +60,9 @@ class ServingTable:
         self.serving_list.remove(food_name)
 
 
-class Customer:
+class Customer(pygame.sprite.Sprite):
     def __init__(self, image):
+        pygame.sprite.Sprite.__init__(self)
         self.img = image
         self.in_restaurant = True
         self.seat_position = -1
@@ -91,7 +95,7 @@ def game_loop():
     key_refresh = False
     mouse_refresh = False
     current_pressed_key = None
-    countdown = 60
+    countdown = 10
     pygame.time.set_timer(pygame.USEREVENT, 1000)
     player = PlayerCharacter()
     customer01 = Customer(customer1)
@@ -105,7 +109,7 @@ def game_loop():
             if scene == 'main_menu':
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not mouse_refresh:
                     mouse_x, mouse_y = pygame.mouse.get_pos()                                                           # Checks mouse x and y coodinates
-                    if 300 < mouse_x < 500 and 300 < mouse_y < 380:                                                     # Condition, if the cursor is within the button when clicked
+                    if 300 < mouse_x < 500 and 400 < mouse_y < 480:                                                     # Condition, if the cursor is within the button when clicked
                         scene = 'in_game'                                                                               # Enters the Game
                         mouse_refresh = True
 
@@ -120,14 +124,6 @@ def game_loop():
                     if countdown == 0:
                         scene = 'game_over'
                         countdown = 60
-                keys = pygame.key.get_pressed()
-
-                if keys[pygame.K_LEFT] and pygame.KEYDOWN:
-                    player.x -= 30
-
-                elif keys[pygame.K_RIGHT] and pygame.KEYDOWN:
-                    player.x += 30
-
             if scene == 'pause_menu':
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not mouse_refresh:
                     scene = 'in_game'
@@ -138,14 +134,12 @@ def game_loop():
 
         # Scene Logic Loop
         if scene == 'main_menu':
-            game_display.fill(WHITE)
-            game_title = title_font.render('A NEET Cafe', 1, BLACK)
-            game_display.blit(game_title, (255, 200))
+            game_display.blit(title_screen, (0, 0))
 
             # Start Button
-            pygame.draw.rect(game_display, BLACK, pygame.Rect(300, 300, 200, 80))
+            pygame.draw.rect(game_display, BLACK, pygame.Rect(300, 400, 200, 80))
             start_button = title_font.render('START', 1, WHITE)
-            game_display.blit(start_button, (320, 300))
+            game_display.blit(start_button, (340, 425))
 
         elif scene == 'in_game':
             game_display.fill(WHITE)
@@ -159,16 +153,23 @@ def game_loop():
             game_display.blit(pudding, (0, 500))
             game_display.blit(timer, (DISPLAY_WIDTH * 0.8 + 10, 15))
 
+            # Player Controls
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT] and pygame.KEYDOWN:
+                player.x -= 10
+
+            elif keys[pygame.K_RIGHT] and pygame.KEYDOWN:
+                player.x += 10
+
+
         elif scene == 'pause_menu':
             pause = title_font.render('PAUSED', 1, BLACK)
             game_display.blit(pause, (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2))
 
         elif scene == 'game_over':
-            game_display.fill(BLACK)
-            game_over_title = my_font.render('GAME OVER', 1, WHITE)
-            game_over_title2 = title_font.render('GAME OVER', 1, WHITE)
-            game_display.blit(game_over_title, (255, 200))
-            game_display.blit(game_over_title2, (255, 400))
+            game_display.blit(game_over_screen, (0, 0))
+            game_over_title = title_font.render('GAME OVER', 1, WHITE)
+            game_display.blit(game_over_title, (255, 400))
 
         pygame.display.update()
         clock.tick(60)
