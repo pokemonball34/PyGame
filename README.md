@@ -1,5 +1,10 @@
 # PyGame
 
+June 12, 2018, 2:36 pm:
+  - Worked on Customer sprites
+  - Created sprite list
+  - Researched more on audio, sprites, etc.
+  
 June 11, 2018, 1:41 pm:
   - Cleaned movement controls
   - Gave some objects the sprite attribute
