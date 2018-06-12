@@ -15,8 +15,8 @@ main_character = pygame.image.load('main character.png')
 title_screen = pygame.image.load('title screen.png')
 game_over_screen = pygame.image.load('cg-you failed.png')
 # load and scale customer to fit the diplay rather than using it purely at its original size
-customer1 = pygame.image.load('patrons-3.png')
-customer1 = pygame.transform.scale(customer1, (200, 200))
+blond_female_customer = pygame.image.load('patrons-3.png')
+blond_female_customer = pygame.transform.scale(blond_female_customer, (200, 200))
 pudding = pygame.image.load('food copy 3.png')
 
 # COLOR PALATE
@@ -28,6 +28,10 @@ BLUE = (0, 0, 255)
 
 # Seats; 0 means empty, 1 means taken
 seated_customer = [0, 0, 0, 0]
+
+#Food Table
+food_list = ('Pudding', 'Spaghetti', 'Hamburger')
+customer_list = (blond_female_customer, )
 
 game_display = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
 pygame.display.set_caption('A NEET Cafe')
@@ -44,6 +48,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.position = None
         self.x = 400
         self.y = 300
+        self.item_held = 'Nothing'
 
     def load_sprite(self):
         game_display.blit(self.image, (self.x, self.y))
@@ -61,17 +66,22 @@ class ServingTable:
 
 
 class Customer(pygame.sprite.Sprite):
+
     def __init__(self, image):
         pygame.sprite.Sprite.__init__(self)
         self.img = image
         self.in_restaurant = True
         self.seat_position = -1
+        self.food_order = food_list[0]
 
     def decide_seat(self):
         for seat in range(0, 4):
             if seated_customer[seat] == 0 and self.seat_position != -1:
                 seated_customer[seat] = 1
                 self.seat_position = seat
+
+    def decide_food_item(self):
+        pass
 
     def leave_seat(self):
         seated_customer[self.seat_position] = 0
@@ -98,13 +108,16 @@ def game_loop():
     countdown = 10
     pygame.time.set_timer(pygame.USEREVENT, 1000)
     player = PlayerCharacter()
-    customer01 = Customer(customer1)
+    customer01 = Customer(customer_list[0])
     while game_running:
         # Event Logic Loop
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                mouse_refresh = False
 
             if scene == 'main_menu':
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not mouse_refresh:
@@ -124,6 +137,7 @@ def game_loop():
                     if countdown == 0:
                         scene = 'game_over'
                         countdown = 60
+
             if scene == 'pause_menu':
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not mouse_refresh:
                     scene = 'in_game'
@@ -145,13 +159,13 @@ def game_loop():
             game_display.fill(WHITE)
             pygame.draw.rect(game_display, BLUE, pygame.Rect(0, DISPLAY_HEIGHT * 0.4, DISPLAY_WIDTH, DISPLAY_HEIGHT / 8))
             player.load_sprite()
-            customer01.decide_seat()
-            customer01.load_sprite()
             pygame.draw.rect(game_display, BLUE, pygame.Rect(0, 500, DISPLAY_WIDTH, DISPLAY_HEIGHT / 6))
             pygame.draw.rect(game_display, BLUE, pygame.Rect(DISPLAY_WIDTH * 0.8, 0, DISPLAY_WIDTH * 0.2, DISPLAY_HEIGHT / 12))
             timer = my_font.render('Timer: ' + str(countdown), True, BLACK)
             game_display.blit(pudding, (0, 500))
             game_display.blit(timer, (DISPLAY_WIDTH * 0.8 + 10, 15))
+            customer01.decide_seat()
+            customer01.load_sprite()
 
             # Player Controls
             keys = pygame.key.get_pressed()
@@ -160,6 +174,21 @@ def game_loop():
 
             elif keys[pygame.K_RIGHT] and pygame.KEYDOWN:
                 player.x += 10
+
+            elif keys[pygame.K_SPACE] and pygame.KEYDOWN and not key_refresh and player.item_held == "Nothing":
+                player.item_held = "Pudding"
+                key_refresh = True
+                print(player.item_held)
+
+            elif keys[pygame.K_SPACE] and pygame.KEYDOWN and not key_refresh and player.item_held != "Nothing":
+                player.item_held = "Nothing"
+                key_refresh = True
+                print(player.item_held)
+
+            if keys[pygame.K_SPACE] and pygame.KEYUP and key_refresh:
+                key_refresh = False
+
+
 
 
         elif scene == 'pause_menu':
