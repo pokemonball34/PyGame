@@ -34,14 +34,19 @@ seated_customer = [0, 0, 0, 0]
 food_list = ('Pudding', 'Spaghetti', 'Hamburger')
 customer_list = (blond_female_customer, )
 
+# creating the game string; when game is opened, it creates the window to start game
 game_display = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
+# caption on the window says 'A NEET Cafe'
 pygame.display.set_caption('A NEET Cafe')
+# set clock variable as Clock object
 clock = pygame.time.Clock()
 
+#set game running with Boolean variable true and the scene as a string
 game_running = True
 scene = 'in_game'
 
 
+# This is the player character with the properties of a sprite
 class PlayerCharacter(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -51,13 +56,15 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.y = 300
         self.item_held = 'Nothing'
 
+ # what main character can do (what it cannot is undefined)
     def load_sprite(self):
         game_display.blit(self.image, (self.x, self.y))
 
     def get_item(self, food_item):
         self.item_held = food_item
 
-
+        
+# sets up object serving table, which food can be added to 
 class ServingTable:
     def __init__(self):
         self.serving_list = []
@@ -69,6 +76,7 @@ class ServingTable:
         self.serving_list.remove(food_name)
 
 
+# sets up object that creates customers
 class Customer(pygame.sprite.Sprite):
 
     def __init__(self, image):
@@ -94,6 +102,7 @@ class Customer(pygame.sprite.Sprite):
         self.in_restaurant = False
 
 
+        # sets up game fuctions for mouse co-ordinates on screen
 def get_mouse_coordinates():
     for event in pygame.event.get():
         if pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -101,13 +110,16 @@ def get_mouse_coordinates():
             print(mouse_x, mouse_y)
 
 
+# Define main game loop
 def game_loop():
     global scene
     key_refresh = False
     mouse_refresh = False
+    # creates timer; 120 seconds for each level
     countdown = 120
     pygame.time.set_timer(pygame.USEREVENT, 1000)
     player = PlayerCharacter()
+    # Define the object 'customer01' as a variable
     customer01 = Customer(customer_list[0])
     customer01.decide_seat()
     while game_running:
@@ -160,9 +172,11 @@ def game_loop():
             start_button = title_font.render('START', 1, WHITE)
             game_display.blit(start_button, (340, 425))
 
+            # introduction scene
         elif scene == 'intro_scene':
             game_display.blit(house_scene, (0, 0))
 
+            # game
         elif scene == 'in_game':
             game_display.fill(WHITE)
             pygame.draw.rect(game_display, BLUE, pygame.Rect(0, DISPLAY_HEIGHT * 0.4, DISPLAY_WIDTH, DISPLAY_HEIGHT / 8))
