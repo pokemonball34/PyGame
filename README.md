@@ -1,5 +1,10 @@
 # PyGame
 
+June 13, 2018, 2:02 am:
+  - Worked on Player sprite
+  - Added collision of edges of screen
+  - Too... tired...
+  
 June 12, 2018, 2:36 pm:
   - Worked on Customer sprites
   - Created sprite list
