@@ -2,7 +2,7 @@ import pygame
 import time
 
 pygame.init()
-
+pygame.mixer.init()
 # set font for title and regular text
 title_font = pygame.font.SysFont('Arial', 48)
 my_font = pygame.font.SysFont('Consolas', 24)
@@ -13,6 +13,7 @@ DISPLAY_HEIGHT = 600
 # GRAPHICS
 main_character = pygame.image.load('main character.png')
 title_screen = pygame.image.load('title screen.png')
+house_scene = pygame.image.load('home.png')
 game_over_screen = pygame.image.load('cg-you failed.png')
 # load and scale customer to fit the diplay rather than using it purely at its original size
 blond_female_customer = pygame.image.load('patrons-3.png')
@@ -29,7 +30,7 @@ BLUE = (0, 0, 255)
 # Seats; 0 means empty, 1 means taken
 seated_customer = [0, 0, 0, 0]
 
-#Food Table
+# Food Table
 food_list = ('Pudding', 'Spaghetti', 'Hamburger')
 customer_list = (blond_female_customer, )
 
@@ -38,7 +39,7 @@ pygame.display.set_caption('A NEET Cafe')
 clock = pygame.time.Clock()
 
 game_running = True
-scene = 'main_menu'
+scene = 'in_game'
 
 
 class PlayerCharacter(pygame.sprite.Sprite):
@@ -52,6 +53,9 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
     def load_sprite(self):
         game_display.blit(self.image, (self.x, self.y))
+
+    def get_item(self, food_item):
+        self.item_held = food_item
 
 
 class ServingTable:
@@ -75,10 +79,7 @@ class Customer(pygame.sprite.Sprite):
         self.food_order = food_list[0]
 
     def decide_seat(self):
-        for seat in range(0, 4):
-            if seated_customer[seat] == 0 and self.seat_position != -1:
-                seated_customer[seat] = 1
-                self.seat_position = seat
+        self.seat_position = 1
 
     def decide_food_item(self):
         pass
@@ -104,11 +105,11 @@ def game_loop():
     global scene
     key_refresh = False
     mouse_refresh = False
-    current_pressed_key = None
-    countdown = 10
+    countdown = 120
     pygame.time.set_timer(pygame.USEREVENT, 1000)
     player = PlayerCharacter()
     customer01 = Customer(customer_list[0])
+    customer01.decide_seat()
     while game_running:
         # Event Logic Loop
         for event in pygame.event.get():
@@ -123,8 +124,12 @@ def game_loop():
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not mouse_refresh:
                     mouse_x, mouse_y = pygame.mouse.get_pos()                                                           # Checks mouse x and y coodinates
                     if 300 < mouse_x < 500 and 400 < mouse_y < 480:                                                     # Condition, if the cursor is within the button when clicked
-                        scene = 'in_game'                                                                               # Enters the Game
+                        scene = 'intro_scene'                                                                           # Enters the Game
                         mouse_refresh = True
+
+            if scene == 'intro_scene':
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not mouse_refresh:
+                    scene = 'in_game'
 
             if scene == 'game_over':
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not mouse_refresh:
@@ -155,28 +160,31 @@ def game_loop():
             start_button = title_font.render('START', 1, WHITE)
             game_display.blit(start_button, (340, 425))
 
+        elif scene == 'intro_scene':
+            game_display.blit(house_scene, (0, 0))
+
         elif scene == 'in_game':
             game_display.fill(WHITE)
             pygame.draw.rect(game_display, BLUE, pygame.Rect(0, DISPLAY_HEIGHT * 0.4, DISPLAY_WIDTH, DISPLAY_HEIGHT / 8))
             player.load_sprite()
             pygame.draw.rect(game_display, BLUE, pygame.Rect(0, 500, DISPLAY_WIDTH, DISPLAY_HEIGHT / 6))
             pygame.draw.rect(game_display, BLUE, pygame.Rect(DISPLAY_WIDTH * 0.8, 0, DISPLAY_WIDTH * 0.2, DISPLAY_HEIGHT / 12))
+            pygame.draw.rect(game_display, BLACK, pygame.Rect(500, 500, 100, 100))
             timer = my_font.render('Timer: ' + str(countdown), True, BLACK)
             game_display.blit(pudding, (0, 500))
             game_display.blit(timer, (DISPLAY_WIDTH * 0.8 + 10, 15))
-            customer01.decide_seat()
             customer01.load_sprite()
 
             # Player Controls
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_LEFT] and pygame.KEYDOWN:
+            if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and pygame.KEYDOWN and player.x > 0:
                 player.x -= 10
 
-            elif keys[pygame.K_RIGHT] and pygame.KEYDOWN:
+            elif (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and pygame.KEYDOWN and player.x < DISPLAY_WIDTH:
                 player.x += 10
 
             elif keys[pygame.K_SPACE] and pygame.KEYDOWN and not key_refresh and player.item_held == "Nothing":
-                player.item_held = "Pudding"
+                player.get_item()
                 key_refresh = True
                 print(player.item_held)
 
@@ -187,9 +195,6 @@ def game_loop():
 
             if keys[pygame.K_SPACE] and pygame.KEYUP and key_refresh:
                 key_refresh = False
-
-
-
 
         elif scene == 'pause_menu':
             pause = title_font.render('PAUSED', 1, BLACK)
