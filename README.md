@@ -1,5 +1,10 @@
 # PyGame
 
+June 14, 2018, 3:15 am:
+  - Worked on Customer Class
+  - Created another file to store the sprites
+  - Some organization
+
 June 13, 2018, 2:02 am:
   - Worked on Player sprite
   - Added collision of edges of screen
