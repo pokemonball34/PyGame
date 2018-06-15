@@ -47,7 +47,7 @@ score = 0
 day = 1
 
 # Sets up serving_table as a list, which food can be added to
-serving_table = [sprites.hamburger, sprites.rice_bowl]
+serving_table = []
 
 
 # This is the player character with the properties of a sprite
@@ -94,8 +94,8 @@ class Customer(object):
         if self.pause == 0:
             self.in_restaurant = True
             self.patience = 10
-            self.order_taken = False
             self.decide_food_item()
+            self.order_taken = False
             self.load_sprite()
             self.pause = -1
 
@@ -129,7 +129,7 @@ class Customer(object):
             pygame.draw.rect(game_display, RED, pygame.Rect(190 * self.seat_number, DISPLAY_HEIGHT * 0.4
                                                             - self.patience * 10, 20, self.patience * 10))
             # Checks if the customer's order is taken
-            if self.order_taken:
+            if self.order_taken and self.pause == 0:
                 # Displays a thought bubble of what the customer desires
                 game_display.blit(sprites.cloud, (200 * self.seat_number, DISPLAY_HEIGHT * 0.3))
                 game_display.blit(self.food_order, (200 * self.seat_number, DISPLAY_HEIGHT * 0.35))
@@ -145,6 +145,13 @@ def game_loop():
     global score
     global day
     global total_score
+
+    # Sets goal milestones
+    day_1_goal = 1000
+    day_2_goal = 1200
+    day_3_goal = 1500
+    day_4_goal = 2000
+
     # Sets a variable screen to decide what to display to the user
     scene = 'main_menu'
     # A boolean variable to check if the key is lifted
@@ -251,7 +258,7 @@ def game_loop():
                         customer04.patience -= 1
 
                     # Checks if the timer ran out
-                    if countdown == 0:
+                    if countdown <= 0:
                         # Checks what day it is, if they manage to pass the require score, they move onto the next day
                         if day == 1 and score >= 1000:
                                 day = 2
@@ -283,14 +290,8 @@ def game_loop():
                             total_score += score
                         else:
                             scene = 'game_over'
-                            total_score += score                        pygame.mixer.music.stop()
-
-            # Checks if the scene is in the pause menu
-            if scene == 'pause_menu':
-                # Checks if the player pressed the escape button
-                if event.type == pygame.KEYDOWN and event == pygame.K_ESCAPE and not key_refresh:
-                    scene = 'in_game'
-                    key_refresh = True
+                            total_score += score
+                            pygame.mixer.music.stop()
 
             # Looks to see if the player made a mouse or key input
             if scene == 'end_day_1' or scene == 'end_day_2' or scene == 'end_day_3':
@@ -338,19 +339,28 @@ def game_loop():
 
             # Serving Table
             pygame.draw.rect(game_display, BLUE, pygame.Rect(0, 500, DISPLAY_WIDTH, DISPLAY_HEIGHT / 6))
+            for food in range(0, len(serving_table)):
+                game_display.blit(serving_table[food], (110 * food, 500))
 
             # Timer Box
             pygame.draw.rect(game_display, BLUE,
                              pygame.Rect(DISPLAY_WIDTH * 0.8, 0, DISPLAY_HEIGHT * 0.4, DISPLAY_HEIGHT / 12))
+            timer = my_font.render('Timer: ' + str(countdown), True, BLACK)
+            game_display.blit(timer, (DISPLAY_WIDTH * 0.8 + 10, 15))
 
             # Score Box
             pygame.draw.rect(game_display, BLUE,
                              pygame.Rect(0, 0, DISPLAY_HEIGHT * 0.4, DISPLAY_HEIGHT / 12))
+            score_text = my_font.render('Score: ' + str(score), True, BLACK)
+            game_display.blit(score_text, (10, 15))
+
+            # Draws the Trash Can
             pygame.draw.rect(game_display, BLACK, pygame.Rect(500, 510, 80, 80))
-            timer = my_font.render('Score: ' + str(score), True, BLACK)
-            for food in range(0, len(serving_table)):
-                game_display.blit(serving_table[food], (110 * food, 500))
-            game_display.blit(timer, (DISPLAY_WIDTH * 0.8 + 10, 15))
+
+            # Goal Box
+            if day == 1:
+                goal = my_font.render('Goal: ' + str(day_1_goal), True, BLACK)
+                game_display.blit(goal, (130, 15))
 
             # Player Controls
             keys = pygame.key.get_pressed()
@@ -378,7 +388,7 @@ def game_loop():
                     customer01.leave_restaurant()
                     customer01.set_delay()
                     player.item_held = 'Nothing'
-                    score += (customer01.patience * 100) + 500
+                    score += (customer01.patience * 10) + 100
                     key_refresh = True
                     plates_clacking.play()
 
@@ -399,7 +409,7 @@ def game_loop():
                     customer02.leave_restaurant()
                     customer02.set_delay()
                     player.item_held = 'Nothing'
-                    score += (customer02.patience * 100) + 500
+                    score += (customer02.patience * 10) + 100
                     key_refresh = True
                     plates_clacking.play()
 
@@ -420,7 +430,7 @@ def game_loop():
                         customer03.leave_restaurant()
                         customer03.set_delay()
                         player.item_held = 'Nothing'
-                        score += (customer03.patience * 100) + 500
+                        score += (customer03.patience * 10) + 100
                         key_refresh = True
                         plates_clacking.play()
 
@@ -441,7 +451,7 @@ def game_loop():
                         customer04.leave_restaurant()
                         customer04.set_delay()
                         player.item_held = 'Nothing'
-                        score += (customer04.patience * 100) + 500
+                        score += (customer04.patience * 10) + 100
                         key_refresh = True
                         plates_clacking.play()
 
@@ -482,22 +492,21 @@ def game_loop():
             # Checks if player paused
             elif keys[pygame.K_ESCAPE] and pygame.KEYDOWN and not key_refresh:
                 scene = 'pause_menu'
+                key_refresh = True
 
             # Checks for a key refresh
             if pygame.KEYUP and key_refresh:
                 key_refresh = False
 
             # Game Starts off with a set number of customers dependant on day
-            if day == 0:
-                # Updates the customer sprite
-                customer01.enter_restaurant()
-                customer01.update()
-            elif day == 1:
+            if day == 1:
                 if not game_setup:
                     customer01.pause = 5
                     customer02.pause = 10
                     pygame.mixer.music.load(baccano)
                     pygame.mixer.music.play(-1)
+                    customer01.decide_food_item()
+                    customer02.decide_food_item()
                 game_setup = True
                 customer01.update()
                 customer01.enter_restaurant()
@@ -509,6 +518,8 @@ def game_loop():
                     customer02.pause = 5
                     pygame.mixer.music.load(baccano)
                     pygame.mixer.music.play(-1)
+                    customer01.enter_restaurant()
+                    customer02.enter_restaurant()
                 game_setup = True
                 customer01.update()
                 customer01.enter_restaurant()
@@ -523,7 +534,11 @@ def game_loop():
                     customer03.pause = 10
                     pygame.mixer.music.load(baccano)
                     pygame.mixer.music.play(-1)
+                    customer01.decide_food_item()
+                    customer02.decide_food_item()
+                    customer03.decide_food_item()
                 game_setup = True
+
                 customer01.update()
                 customer01.enter_restaurant()
                 customer02.update()
@@ -538,6 +553,10 @@ def game_loop():
                     customer04.pause = 12
                     pygame.mixer.music.load(baccano)
                     pygame.mixer.music.play(-1)
+                    customer01.decide_food_item()
+                    customer02.decide_food_item()
+                    customer03.decide_food_item()
+                    customer04.decide_food_item()
                 game_setup = True
                 customer01.update()
                 customer01.enter_restaurant()
@@ -551,26 +570,59 @@ def game_loop():
         elif scene == 'pause_menu':
             pause = title_font.render('PAUSED', 1, BLACK)
             game_display.blit(pause, (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2))
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_ESCAPE] and pygame.KEYDOWN and not key_refresh:
+                scene = 'in_game'
+                key_refresh = True
+            if pygame.KEYUP and key_refresh:
+                key_refresh = False
 
         elif scene == 'game_over':
             game_display.blit(sprites.game_over_screen, (0, 0))
             game_over_title = title_font.render('GAME OVER', 1, WHITE)
             game_display.blit(game_over_title, (255, 400))
+            customer01.leave_restaurant()
+            customer02.leave_restaurant()
+            customer03.leave_restaurant()
+            customer04.leave_restaurant()
+            serving_table[:] = []
 
         elif scene == 'game_over-2':
             game_display.blit(sprites.game_over2_screen, (0, 0))
+            customer01.leave_restaurant()
+            customer02.leave_restaurant()
+            customer03.leave_restaurant()
+            customer04.leave_restaurant()
+            serving_table[:] = []
 
         elif scene == 'end_day_1':
             game_display.blit(sprites.day1_complete, (0, 0))
+            customer01.leave_restaurant()
+            customer02.leave_restaurant()
+            serving_table[:] = []
 
         elif scene == 'end_day_2':
             game_display.blit(sprites.day2_complete, (0, 0))
+            customer01.leave_restaurant()
+            customer02.leave_restaurant()
+            customer03.leave_restaurant()
+            serving_table[:] = []
 
         elif scene == 'end_day_3':
             game_display.blit(sprites.day3_complete, (0, 0))
+            customer01.leave_restaurant()
+            customer02.leave_restaurant()
+            customer03.leave_restaurant()
+            customer04.leave_restaurant()
+            serving_table[:] = []
 
         elif scene == 'end_day_4':
             game_display.fill(WHITE)
+            customer01.leave_restaurant()
+            customer02.leave_restaurant()
+            customer03.leave_restaurant()
+            customer04.leave_restaurant()
+            serving_table[:] = []
             game_display.blit(my_font.render('Thanks for Playing!', 1, BLACK), (50, 10))
             game_display.blit(my_font.render('Total Score: ' + str(total_score), 1, BLACK), (50, 110))
 
@@ -588,7 +640,9 @@ def game_loop():
         pygame.display.update()
         clock.tick(60)
 
-
+# Calls the game loop
 game_loop()
+
+# Quits the program
 pygame.quit()
 quit()
